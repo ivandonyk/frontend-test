@@ -1,3 +1,5 @@
+import { makeStyles } from "@mui/styles"
+import { useState } from "react"
 import {
   Card as MuiCard,
   CardContent as MuiCardContent,
@@ -6,23 +8,25 @@ import {
   FormControlLabel,
   Theme
 } from "@mui/material"
-import { makeStyles } from "@mui/styles"
-import { useState } from "react"
 
-interface CardProps {}
-
-interface StyleProps {
+interface CardProps {
   checked?: boolean
 }
 
-const useStyles = makeStyles<Theme, StyleProps>(() => ({
+interface StyleProps extends CardProps {}
+
+const useStyles = makeStyles<Theme, StyleProps>((theme) => ({
   root: {
+    border: `1px solid ${theme.palette.secondary.main}`,
+    borderRadius: "10px !important",
     width: "229px",
     height: "150px",
-    boxShadow: (props) => (props.checked ? "0px 0px 0px 2px #65E9D9" : "none"),
+    display: "inline-block ",
+    boxShadow: (props) =>
+      props.checked ? `0px 0px 0px 2px ${theme.palette.primary.main}` : "none",
 
     "&:hover": {
-      boxShadow: "0px 0px 0px 2px #65E9D9"
+      boxShadow: `0px 0px 0px 2px ${theme.palette.primary.main}`
     }
   },
 
@@ -35,43 +39,42 @@ const useStyles = makeStyles<Theme, StyleProps>(() => ({
     alignItems: "center",
     justifyContent: "flex-start",
     padding: "15px",
-    boxSizing: "border-box",
+    boxSizing: "border-box"
+  },
 
-    "& .MuiFormControlLabel-root": {
-      lineHeight: "0",
-      height: "20px"
-    },
+  checkboxLabel: {
+    lineHeight: "0",
+    height: "20px",
+    display: "flex",
+    alignItems: "center",
+    paddingLeft: "16.5px",
 
-    "& .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.Mui-checked, .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.MuiCheckbox-indeterminate":
-      {
-        color: "#21B6A8"
-      },
-
-    "& .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root": {
-      padding: "0",
-      height: "13.5px",
-      width: "13.5px",
-      marginRight: "10.25px",
-      marginLeft: "16.25px"
-    },
-
-    "& .css-j204z7-MuiFormControlLabel-root": {
-      display: "flex",
-      alignItems: "center",
-      lineHeight: "0.9rem"
-    },
-    "& .css-j204z7-MuiFormControlLabel-root .MuiFormControlLabel-label": {
-      lineHeight: "0.8rem"
-    },
-    "& .PrivateSwitchBase-input .css-1m9pwf3": {
-      height: "13.5px",
-      width: "13.5px"
+    "& .MuiFormControlLabel-label": {
+      paddingLeft: "10.25px",
+      fontSize: "14px",
+      fontWeight: 400,
+      lineHeight: "20px",
+      letterSpacing: "0.17000000178813934px",
+      textAlign: "left"
     }
+  },
+  checkbox: {
+    height: "13.5px",
+    width: "13.5px",
+    padding: "0 !important",
+    borderColor: (props) =>
+      props.checked
+        ? `${theme.palette.primary.main} !important`
+        : `${theme.palette.secondary.dark} !important`,
+    color: (props) =>
+      props.checked
+        ? `${theme.palette.primary.main} !important`
+        : `${theme.palette.secondary.dark} !important`
   }
 }))
 
-const Card: React.FC<CardProps> = () => {
-  const [checked, setChecked] = useState<boolean>(false)
+const Card: React.FC<CardProps> = ({ checked: muiChecked = false }) => {
+  const [checked, setChecked] = useState<boolean>(muiChecked)
 
   const classes = useStyles({ checked })
 
@@ -90,7 +93,14 @@ const Card: React.FC<CardProps> = () => {
       />
       <MuiCardContent className={classes.content}>
         <FormControlLabel
-          control={<Checkbox checked={checked} onChange={handleChange} />}
+          className={classes.checkboxLabel}
+          control={
+            <Checkbox
+              checked={checked}
+              onChange={handleChange}
+              className={classes.checkbox}
+            />
+          }
           label="Flood zone 3"
         />
       </MuiCardContent>
